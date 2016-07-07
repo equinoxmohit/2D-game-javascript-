@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Playing with collision detector</title>
+	<style type="text/css">
+		canvas
+		{
+			box-shadow: 1px 1px 2px 2px #231F20;
+			
+		}
+
+
+	</style>
+</head>
+<body>
+  <!--Adding canvas-->
+  <canvas width="650" height="450" id="canvas"></canvas>
+  <!--Adding javascript-->
+  <script type="text/javascript">
+  	//giving a constant width and height of the game
+  	var GAME_WIDTH=600,GAME_HEIGHT=450;
+  	var gameStart=true;
+  	var level=1;
+
+
+  //different attributes of player
+  	var player=
+  	{
+  		x:10,
+  		y:200,
+  		speedX:4,
+  		h:30,
+  		w:30,
+  		isMoving:false
+  	};
+
+  	var goal=
+  	{
+  		x:590,
+  		y:200,
+  		w:50,
+  		h:50
+  	}
+
+  	
+
+  	//different attributes of enemies stored in arrays
+  	var enemies=[
+  	{
+  		x:100,
+  		y:10,
+  		speedY:2,
+  		h:30,
+  		w:30
+  	},
+  	
+  	{
+  		x:200,
+  		y:10,
+  		speedY:3,
+  		h:30,
+  		w:30
+  	},
+  	
+  	{
+  		x:300,
+  		y:10,
+  		speedY:4,
+  		h:30,
+  		w:30
+  	},
+  	
+  	{
+  		x:400,
+  		y:10,
+  		speedY:5,
+  		h:30,
+  		w:30
+  	},
+  	
+  	{
+  		x:500,
+  		y:10,
+  		speedY:6,
+  		h:30,
+  		w:30	
+  	}
+  	];
+
+
+  	var move=function()
+  	{
+  		player.isMoving=true;
+  	}
+
+  	var stop=function()
+  	{
+  		player.isMoving=false;
+  	}
+
+
+  	var canvas=document.getElementById('canvas');
+  	context=canvas.getContext('2d');  	
+  	canvas.addEventListener('mousedown',move);
+  	canvas.addEventListener('mouseup',stop);
+  	canvas.addEventListener('touchstart',move);
+  	canvas.addEventListener('touchend',stop);
+  	
+
+
+  	var create=function()
+  	{
+  		context.clearRect(0,0,GAME_WIDTH,GAME_HEIGHT);
+  		context.fillStyle="red";
+  		context.fillRect(player.x,player.y,player.w,player.h);
+  		context.fillStyle="green";
+  		context.fillRect(goal.x,goal.y,goal.w,goal.h);	
+
+  		enemies.forEach(function(element){
+  			context.fillStyle="blue";
+  			context.fillRect(element.x,element.y,element.w,element.h);
+  		})
+  	}
+
+  	var update=function()
+  	{
+  		
+  		if(checkCollision(player,goal))
+  			{
+  				/*gameStart=false;
+  				alert("You\'ve won");
+
+  				window.location="";*/
+
+  				level ++;
+  				player.x=10;
+  				player.y=200;
+
+  				enemies.forEach(function(element){
+  					if(element.speedY>0)
+  					{
+  						element.speedY++;
+  					}
+  					else
+  					{
+  						element.speedY--;
+  					}
+
+
+  				})
+
+  			}
+
+
+
+  		if(player.isMoving)
+  		{
+  			player.x+=player.speedX;
+  		}	
+
+  		
+
+  		enemies.forEach(function(element){
+
+  			if(checkCollision(player,element))
+  			{
+  				gameStart=false;
+  				alert("GAME OVER!! BETTER LUCK NEXT TIME");
+
+  				window.location="";
+  			}
+
+
+  			element.y+=element.speedY;
+
+  			if(element.y>=GAME_HEIGHT-50)
+  			{
+  				element.y=GAME_HEIGHT-50;
+  				element.speedY*=-1;
+  					
+  			}
+
+  			else if(element.y<=10)
+  			{
+  				element.y=10;
+  				element.speedY*=-1;
+  			}
+
+  			
+  		})
+
+
+  	}
+
+
+  	var work=function()
+  	{
+  		update();
+  		create();
+  		if(gameStart){
+  		window.requestAnimationFrame(work);
+  		}
+  	}
+
+  	var checkCollision =function(rect1, rect2)
+	{
+		var closeOnWidth=Math.abs(rect1.x-rect2.x)<=Math.max(rect1.w,rect2.w);
+		var closeOnHeight=Math.abs(rect1.y-rect2.y)<=Math.max(rect1.h,rect2.h);
+
+		return closeOnWidth && closeOnHeight;
+
+	};
+
+
+  
+  	work();
+
+
+  </script>
+</body>
+</html>
