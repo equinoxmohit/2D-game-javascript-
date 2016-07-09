@@ -21,6 +21,11 @@
   	var GAME_WIDTH=600,GAME_HEIGHT=450;
   	var gameStart=true;
   	var level=1;
+    var gameScore=10;
+
+     
+
+
 
 
   //different attributes of player
@@ -91,6 +96,7 @@
   	var move=function()
   	{
   		player.isMoving=true;
+      gameScore+=10;
   	}
 
   	var stop=function()
@@ -98,34 +104,52 @@
   		player.isMoving=false;
   	}
 
-
-  	var canvas=document.getElementById('canvas');
+    var canvas=document.getElementById('canvas');
   	context=canvas.getContext('2d');  	
-  	canvas.addEventListener('mousedown',move);
-  	canvas.addEventListener('mouseup',stop);
-  	canvas.addEventListener('touchstart',move);
-  	canvas.addEventListener('touchend',stop);
+  	window.addEventListener('mousedown',move);
+  	window.addEventListener('mouseup',stop);
+    window.addEventListener('keypress',move);
+      window.addEventListener('keyup',stop);
+  	window.addEventListener('touchstart',move);
+  	window.addEventListener('touchend',stop);
   	
 
+    function scoreDisplay()
+    {
+    
+    context.font = "bold 15px sans-serif";
+    context.fillStyle="black";
+    context.fillText("SCORE:"+gameScore.toString(), 10, 20);
+    }
+
+    
 
   	var create=function()
   	{
   		context.clearRect(0,0,GAME_WIDTH,GAME_HEIGHT);
-  		context.fillStyle="red";
-  		context.fillRect(player.x,player.y,player.w,player.h);
-  		context.fillStyle="green";
+        context.fillStyle="red";
+     	  context.fillRect(player.x,player.y,player.w,player.h);
+     
+
+     	context.fillStyle="green";
   		context.fillRect(goal.x,goal.y,goal.w,goal.h);	
 
   		enemies.forEach(function(element){
   			context.fillStyle="blue";
   			context.fillRect(element.x,element.y,element.w,element.h);
   		})
-  	}
+
+      scoreDisplay();
+}
+  
+  	
 
   	var update=function()
   	{
   		
-  		if(checkCollision(player,goal))
+
+
+ 		if(checkCollision(player,goal))
   			{
   				/*gameStart=false;
   				alert("You\'ve won");
@@ -137,17 +161,27 @@
   				player.y=200;
 
   				enemies.forEach(function(element){
-  					if(element.speedY>0)
+  					if(level++){
+            if(element.speedY>0)
   					{
-  						element.speedY++;
+  						element.speedY+=2;
   					}
   					else
   					{
-  						element.speedY--;
+  						element.speedY-=2;
   					}
+          }
+
+           
 
 
   				})
+
+         
+         
+
+      
+          
 
   			}
 
@@ -156,46 +190,56 @@
   		if(player.isMoving)
   		{
   			player.x+=player.speedX;
+       
   		}	
 
-  		
+       enemies.forEach(function(element){
+        if(checkCollision(player,element))
+        {
+          alert('Game Over. Your final Score is: ' +gameScore);
+          gameStart=false;
+          window.location="";
+        }
 
-  		enemies.forEach(function(element){
+        element.y+=element.speedY;
 
-  			if(checkCollision(player,element))
-  			{
-  				gameStart=false;
-  				alert("GAME OVER!! BETTER LUCK NEXT TIME");
+        enemies.forEach(function(element){
+          if(element.y>GAME_HEIGHT-50)
+          {
+            element.y=GAME_HEIGHT-50;
+            element.speedY*=-1;
 
-  				window.location="";
-  			}
+          }
+          else if(element.y<10)
+          {
+            element.y=10;
+            element.speedY*=-1;
+
+          }
 
 
-  			element.y+=element.speedY;
 
-  			if(element.y>=GAME_HEIGHT-50)
-  			{
-  				element.y=GAME_HEIGHT-50;
-  				element.speedY*=-1;
-  					
-  			}
+        })
 
-  			else if(element.y<=10)
-  			{
-  				element.y=10;
-  				element.speedY*=-1;
-  			}
+
+
+      });
+
+  		};
+
 
   			
-  		})
+  		
 
 
-  	}
+  	
 
 
   	var work=function()
   	{
-  		update();
+  		
+      
+      update();
   		create();
   		if(gameStart){
   		window.requestAnimationFrame(work);
@@ -214,6 +258,7 @@
 
   
   	work();
+
 
 
   </script>
